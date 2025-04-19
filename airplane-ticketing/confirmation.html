@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Booking Confirmation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-blue-600 text-white p-4 shadow-md">
+    <h1 class="text-2xl font-bold text-center">Booking Confirmation</h1>
+  </header>
+
+  <main class="flex-grow container mx-auto p-4 max-w-4xl">
+    <section class="bg-white rounded-lg shadow p-6 mb-6 text-center">
+      <h2 class="text-2xl font-semibold mb-4 text-green-700">Booking Confirmed!</h2>
+      <div id="confirmation-details" class="mb-6"></div>
+      <button id="new-booking-btn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">Book Another Flight</button>
+    </section>
+  </main>
+
+  <footer class="bg-gray-800 text-gray-300 p-4 text-center">
+    &copy; 2024 Airplane Ticket Booking. All rights reserved.
+  </footer>
+
+  <script>
+    const mockFlights = [
+      { id: 1, from: 'New York', to: 'London', date: '2024-07-01', time: '08:00', duration: '7h 30m', price: 500 },
+      { id: 2, from: 'New York', to: 'London', date: '2024-07-01', time: '15:00', duration: '7h 45m', price: 520 },
+      { id: 3, from: 'New York', to: 'Paris', date: '2024-07-01', time: '09:00', duration: '7h 0m', price: 480 },
+      { id: 4, from: 'Los Angeles', to: 'Tokyo', date: '2024-07-02', time: '12:00', duration: '11h 30m', price: 750 },
+    ];
+
+    function getQueryParams() {
+      const params = {};
+      window.location.search.substring(1).split("&").forEach(pair => {
+        const [key, value] = pair.split("=");
+        params[decodeURIComponent(key)] = decodeURIComponent(value || "");
+      });
+      return params;
+    }
+
+    function displayConfirmation(details) {
+      const confirmationDiv = document.getElementById('confirmation-details');
+      confirmationDiv.innerHTML = `
+        <p><strong>Flight:</strong> ${details.from} &rarr; ${details.to}</p>
+        <p><strong>Date:</strong> ${details.date} | <strong>Time:</strong> ${details.time}</p>
+        <p><strong>Duration:</strong> ${details.duration}</p>
+        <p><strong>Price:</strong> ${details.price} USD</p>
+        <hr class="my-4" />
+        <p><strong>Passenger Name:</strong> ${details.passengerName}</p>
+        <p><strong>Email:</strong> ${details.passengerEmail}</p>
+        <p><strong>Phone:</strong> ${details.passengerPhone}</p>
+      `;
+    }
+
+    function init() {
+      const params = getQueryParams();
+      const flightId = parseInt(params.flightId, 10);
+      const flight = mockFlights.find(f => f.id === flightId);
+
+      if (!flight) {
+        alert('Invalid flight information.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const bookingDetails = {
+        ...flight,
+        passengerName: params.passengerName || '',
+        passengerEmail: params.passengerEmail || '',
+        passengerPhone: params.passengerPhone || ''
+      };
+
+      displayConfirmation(bookingDetails);
+
+      const newBookingBtn = document.getElementById('new-booking-btn');
+      newBookingBtn.addEventListener('click', () => {
+        window.location.href = 'index.html';
+      });
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
