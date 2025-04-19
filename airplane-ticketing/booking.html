@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Passenger Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-blue-600 text-white p-4 shadow-md">
+    <h1 class="text-2xl font-bold text-center">Passenger Details</h1>
+  </header>
+
+  <main class="flex-grow container mx-auto p-4 max-w-4xl">
+    <section class="bg-white rounded-lg shadow p-6 mb-6">
+      <div id="flight-info" class="mb-6"></div>
+      <form id="booking-form" class="space-y-4">
+        <div>
+          <label for="passenger-name" class="block mb-1 font-medium">Full Name</label>
+          <input type="text" id="passenger-name" name="passengerName" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="passenger-email" class="block mb-1 font-medium">Email</label>
+          <input type="email" id="passenger-email" name="passengerEmail" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="passenger-phone" class="block mb-1 font-medium">Phone Number</label>
+          <input type="tel" id="passenger-phone" name="passengerPhone" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="text-center">
+          <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">Confirm Booking</button>
+        </div>
+      </form>
+      <div class="mt-6 text-center">
+        <a href="flights.html" class="text-blue-600 hover:underline">&larr; Back to Flights</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-800 text-gray-300 p-4 text-center">
+    &copy; 2024 Airplane Ticket Booking. All rights reserved.
+  </footer>
+
+  <script>
+    const mockFlights = [
+      { id: 1, from: 'New York', to: 'London', date: '2024-07-01', time: '08:00', duration: '7h 30m', price: 500 },
+      { id: 2, from: 'New York', to: 'London', date: '2024-07-01', time: '15:00', duration: '7h 45m', price: 520 },
+      { id: 3, from: 'New York', to: 'Paris', date: '2024-07-01', time: '09:00', duration: '7h 0m', price: 480 },
+      { id: 4, from: 'Los Angeles', to: 'Tokyo', date: '2024-07-02', time: '12:00', duration: '11h 30m', price: 750 },
+    ];
+
+    function getQueryParams() {
+      const params = {};
+      window.location.search.substring(1).split("&").forEach(pair => {
+        const [key, value] = pair.split("=");
+        params[decodeURIComponent(key)] = decodeURIComponent(value || "");
+      });
+      return params;
+    }
+
+    function displayFlightInfo(flight) {
+      const flightInfoDiv = document.getElementById('flight-info');
+      flightInfoDiv.innerHTML = `
+        <h2 class="text-lg font-semibold mb-2">Selected Flight</h2>
+        <p><strong>${flight.from} &rarr; ${flight.to}</strong></p>
+        <p>Date: ${flight.date} | Time: ${flight.time} | Duration: ${flight.duration}</p>
+        <p class="text-lg font-semibold">${flight.price} USD</p>
+      `;
+    }
+
+    function init() {
+      const params = getQueryParams();
+      const flightId = parseInt(params.flightId, 10);
+      const flight = mockFlights.find(f => f.id === flightId);
+
+      if (!flight) {
+        alert('Invalid flight selected.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      displayFlightInfo(flight);
+
+      const bookingForm = document.getElementById('booking-form');
+      bookingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = bookingForm.passengerName.value.trim();
+        const email = bookingForm.passengerEmail.value.trim();
+        const phone = bookingForm.passengerPhone.value.trim();
+
+        if (!name || !email || !phone) {
+          alert('Please fill in all passenger details.');
+          return;
+        }
+
+        // Redirect to confirmation page with booking details in query params
+        const queryParams = new URLSearchParams({
+          flightId: flight.id,
+          passengerName: name,
+          passengerEmail: email,
+          passengerPhone: phone
+        }).toString();
+
+        window.location.href = `confirmation.html?${queryParams}`;
+      });
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
